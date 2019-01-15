@@ -2,13 +2,12 @@
 
 # Imports for ROS
 import rospy
-from std_msgs.msg import Float32
+from std_msgs.msg import UInt16
 
 # Import and setup for WiringPi (keep order)
 import sys
 sys.path.append('/home/ubuntu/.local/lib/python2.7/site-packages')
 import wiringpi
-
 import time
 
 # PWM pins
@@ -18,9 +17,16 @@ PWM_PIN_MOTOR = 19
 # Ultrasonic sensor distance
 ultrasonic_sensor_distance = 400
 
+# TOF sensor distance
+tof_sensor_distance = 2000
+
 def ultrasonic_sensor_data_handler(data):
 	global ultrasonic_sensor_distance
 	ultrasonic_sensor_distance = data.data
+
+def tof_sensor_data_handler(data):
+	global tof_sensor_distance
+	tof_sensor_distance = data.data
 
 def pwm_setup():
 	# Clock variables
@@ -47,14 +53,15 @@ def pwm_setup():
 
 def data_receiver_setup():
 	rospy.init_node('stop_wall', anonymous=True)
-	rospy.Subscriber('ultrasonic_sensor_data', Float32, ultrasonic_sensor_data_handler)
+	#rospy.Subscriber('ultrasonic_sensor_data', Float32, ultrasonic_sensor_data_handler)
+	rospy.Subscriber('tof_sensor_data', UInt16, tof_sensor_data_handler)
 
 def drive_until_obstacle():
 	is_obstacle = False
 
 	rate = rospy.Rate(10)
 	while not rospy.is_shutdown():
-		if ultrasonic_sensor_distance < 150.0:
+		if (tof_sensor_distance != 0) and (tof_sensor_distance < 1000):
 			is_obstacle = True
 
 		if not is_obstacle:
