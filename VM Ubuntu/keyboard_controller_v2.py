@@ -12,9 +12,9 @@ servo_right = 100
 
 # Values for the motor
 motor_brake = 0
-motor_reverse = 20
+motor_reverse = 49
 motor_idle = 50
-motor_normal = 72
+motor_normal = 51
 motor_boost = 80
 
 # Initialize servo and motor current values

@@ -15,11 +15,12 @@ PWM_PIN_MOTOR = 19
 
 # Values for the servo
 servo_straight = 141
-servo_variance = 21
+servo_variance = 21.0
 
 # Values for the motor
 motor_idle = 150
-motor_variance = 25
+motor_variance = 14.0
+motor_offset = 11
 
 def motor_data_handler(data):
 	# higher 8 bit is motor value
@@ -28,8 +29,14 @@ def motor_data_handler(data):
 	motor_received_value = received_data >> 8
 	servo_received_value = received_data & 0x00FF
 
-	motor_current_value = motor_idle + int( (motor_received_value - 50) / (50 / motor_variance) )
-	servo_current_value = servo_straight + int( (servo_received_value - 50) / (50 / servo_variance) )
+	if (motor_received_value == 50):
+		motor_current_value = motor_idle
+	elif motor_received_value > 50:
+		motor_current_value = (motor_idle + motor_offset) + int( (motor_received_value - 50) / (50.0 / motor_variance) )
+	elif motor_received_value < 50:
+		motor_current_value = (motor_idle - motor_offset) + int( (motor_received_value - 50) / (50.0 / motor_variance) )
+	
+	servo_current_value = servo_straight + int( (servo_received_value - 50) / (50.0 / servo_variance) )
 
 	wiringpi.pwmWrite(PWM_PIN_SERVO, servo_current_value)
 	wiringpi.pwmWrite(PWM_PIN_MOTOR, motor_current_value)
