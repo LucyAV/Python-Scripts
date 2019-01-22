@@ -14,7 +14,7 @@ servo_right = 100
 motor_brake = 0
 motor_reverse = 28
 motor_idle = 50
-motor_normal = 72
+motor_normal = 51
 motor_boost = 100
 
 # Initialize servo and motor current values
@@ -40,7 +40,7 @@ def drive_until_obstacle():
 	while not rospy.is_shutdown():
 
 		if lidar_forward_clear is True:
-			motor_current_value = 75
+			motor_current_value = 51
 			#isDriving = True
 			publisher.publish( (motor_current_value << 8) | servo_current_value )
 			rate.sleep()
